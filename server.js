@@ -18,8 +18,9 @@ const TWILIO_PHONE = process.env.TWILIO_PHONE;
 const subscribers = [];
 
 app.use(cors({
-    origin: ["http://127.0.0.1:5500", "http://localhost:5500"], 
+    origin: "*", // Allows all origins (for testing)
     methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type"],
     credentials: true
 }));
 app.use(bodyParser.json());
