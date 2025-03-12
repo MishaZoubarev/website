@@ -37,7 +37,7 @@ document.getElementById("sms-form").addEventListener("submit", async function (e
     }
 
     try {
-        const response = await fetch("http://localhost:5000/subscribe", {
+        const response = await fetch("https://website-mauve-three-93.vercel.app/subscribe", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ phone, city, time }),
