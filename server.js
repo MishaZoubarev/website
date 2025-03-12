@@ -24,6 +24,15 @@ app.use(cors({
 }));
 app.use(bodyParser.json());
 
+const path = require("path");
+
+// Serve static files from the 'public' folder
+app.use(express.static(path.join(__dirname, "public")));
+
+// Serve `index.html` when accessing the root URL
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
 
 // OpenWeather API Key
 const WEATHER_API_KEY = process.env.WEATHER_API_KEY;
