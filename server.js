@@ -1,0 +1,78 @@
+require("dotenv").config();
+const express = require("express");
+const cors = require("cors");
+const bodyParser = require("body-parser");
+const axios = require("axios");
+const cron = require("node-cron");
+const twilio = require("twilio");
+
+const app = express();
+const PORT = process.env.PORT || 5000;
+
+
+// Twilio Setup
+const twilioClient = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
+const TWILIO_PHONE = process.env.TWILIO_PHONE;
+
+// Store user subscriptions
+const subscribers = [];
+
+app.use(cors({
+    origin: ["http://127.0.0.1:5500", "http://localhost:5500"], 
+    methods: ["GET", "POST"],
+    credentials: true
+}));
+app.use(bodyParser.json());
+
+
+// OpenWeather API Key
+const WEATHER_API_KEY = process.env.WEATHER_API_KEY;
+
+// Subscribe Route
+app.post("/subscribe", (req, res) => {
+    const { phone, city, time } = req.body;
+    
+    if (!phone || !city || !time) {
+        return res.status(400).json({ message: "All fields are required." });
+    }
+
+    subscribers.push({ phone, city, time });
+    console.log(`New subscriber: ${phone} for ${city} at ${time}`);
+
+    res.json({ message: "Subscription successful! You will receive daily weather updates." });
+});
+
+// Function to Fetch Weather & Send SMS
+const sendWeatherUpdates = async () => {
+    for (let user of subscribers) {
+        try {
+            const { phone, city } = user;
+            const weatherResponse = await axios.get(
+                `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${WEATHER_API_KEY}&units=metric`
+            );
+
+            const temp = weatherResponse.data.main.temp;
+            const description = weatherResponse.data.weather[0].description;
+            const message = `🌤️ Weather Update for ${city}: ${description.toUpperCase()}, Temp: ${temp}°C`;
+
+            await twilioClient.messages.create({
+                body: message,
+                from: TWILIO_PHONE,
+                to: phone,
+            });
+
+            console.log(`✅ Sent weather update to ${phone}: ${message}`);
+        } catch (error) {
+            console.error(`❌ Failed to send weather to ${user.phone}:`, error.message);
+        }
+    }
+};
+
+// Schedule the job every minute for testing (change to hourly for real use)
+cron.schedule("* * * * *", () => {
+    console.log("⏳ Running weather SMS scheduler...");
+    sendWeatherUpdates();
+});
+
+// Start the server
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
