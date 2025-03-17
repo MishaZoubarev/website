@@ -39,7 +39,7 @@ app.get("/", (req, res) => {
 const WEATHER_API_KEY = process.env.WEATHER_API_KEY;
 
 // Subscribe Route
-app.post("/subscribe", (req, res) => {
+app.post("/subscribe", async (req, res) => {
     const { phone, city, time } = req.body;
     
     if (!phone || !city || !time) {
@@ -49,8 +49,17 @@ app.post("/subscribe", (req, res) => {
     subscribers.push({ phone, city, time });
     console.log(`New subscriber: ${phone} for ${city} at ${time}`);
 
+    // Manually trigger SMS after subscribing
+    try {
+        await sendWeatherUpdates();
+        console.log(`✅ Manually triggered weather SMS for ${phone}`);
+    } catch (error) {
+        console.error(`❌ Error sending manual SMS:`, error);
+    }
+
     res.json({ message: "Subscription successful! You will receive daily weather updates." });
 });
+
 
 // Function to Fetch Weather & Send SMS
 const sendWeatherUpdates = async () => {
