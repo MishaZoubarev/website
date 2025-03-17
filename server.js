@@ -65,11 +65,16 @@ const sendWeatherUpdates = async () => {
             const description = weatherResponse.data.weather[0].description;
             const message = `🌤️ Weather Update for ${city}: ${description.toUpperCase()}, Temp: ${temp}°C`;
 
-            await twilioClient.messages.create({
-                body: message,
-                from: TWILIO_PHONE,
-                to: phone,
-            });
+            try {
+                await twilioClient.messages.create({
+                    body: message,
+                    from: TWILIO_PHONE,
+                    to: phone,
+                });
+                console.log(`✅ SMS sent to ${phone}`);
+            } catch (error) {
+                console.error(`❌ Twilio Error:`, error);
+            }
 
             console.log(`✅ Sent weather update to ${phone}: ${message}`);
         } catch (error) {
