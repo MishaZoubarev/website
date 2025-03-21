@@ -1,29 +1,58 @@
+// ---- Login Popup ---- //
 const wrapper = document.querySelector('.wrapper');
 const loginLink = document.querySelector('.login-link');
 const registerLink = document.querySelector('.register-link');
 const btnPopup = document.querySelector('.btnLogin-popup');
 const iconClose = document.querySelector('.icon-close');
 
-registerLink.addEventListener('click', ()=> {
+registerLink.addEventListener('click', () => {
     wrapper.classList.add('active');
 });
 
-loginLink.addEventListener('click', ()=> {
+loginLink.addEventListener('click', () => {
     wrapper.classList.remove('active');
 });
 
-btnPopup.addEventListener('click', ()=> {
+btnPopup.addEventListener('click', () => {
     wrapper.classList.add('active-popup');
 });
 
-iconClose.addEventListener('click', ()=> {
+iconClose.addEventListener('click', () => {
     wrapper.classList.remove('active-popup');
 });
 
-/*const API_KEY = "292903dfab13192da863f606002ed353";*/
+// ---- Smooth Scrolling ---- //
+document.querySelectorAll('nav a').forEach(anchor => {
+    anchor.addEventListener('click', function (event) {
+        event.preventDefault();
+        const targetId = this.getAttribute('href').substring(1);
+        const targetSection = document.getElementById(targetId);
 
+        if (targetSection) {
+            window.scrollTo({
+                top: targetSection.offsetTop - 60,
+                behavior: 'smooth'
+            });
+        }
+    });
+});
 
+// ---- Fade-In Effect When Scrolling ---- //
+const sections = document.querySelectorAll('section');
 
+const observer = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+        }
+    });
+}, { threshold: 0.2 });
+
+sections.forEach(section => {
+    observer.observe(section);
+});
+
+// ---- Weather Subscription Form ---- //
 document.getElementById("sms-form").addEventListener("submit", async function (event) {
     event.preventDefault(); // Prevent page refresh
 
