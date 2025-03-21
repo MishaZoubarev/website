@@ -5,70 +5,67 @@
     padding: 0;
     box-sizing: border-box;
     font-family: 'Poppins', sans-serif;
-    scroll-behavior: smooth;
 }
 
-/* ---- General Styling ---- */
 body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
     background: url('wp8552676.webp') no-repeat;
     background-size: cover;
     background-position: center;
-    color: white;
 }
 
-/* ---- Navbar ---- */
-header {
+header{
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
-    padding: 15px 100px;
+    padding: 20px 100px;
+    /* background: red; */
     display: flex;
     justify-content: space-between;
     align-items: center;
-    z-index: 1000;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(8px);
+    z-index: 99;
 }
 
 .logo {
-    font-size: 1.8em;
-    font-weight: bold;
-    color: white;
+    font-size: 2em;
+    color: #fff;
+    user-select: none;
     -webkit-text-stroke: 1px black;
 }
 
-.navigation a {
+.navigation a{
+    position: relative;
     font-size: 1.1em;
     color: #fff;
     text-decoration: none;
     font-weight: 500;
     margin-left: 40px;
-    position: relative;
-    transition: 0.3s;
-}
-
-.navigation a:hover {
-    color: #ffcc00;
 }
 
 .navigation a::after {
     content: '';
     position: absolute;
     left: 0;
-    bottom: -4px;
+    bottom: -6px;
     width: 100%;
-    height: 2px;
-    background: #ffcc00;
+    height: 3px;
+    background: #fff;
+    border-radius: 5px;
+    transform-origin: right;
     transform: scaleX(0);
-    transition: transform 0.3s ease;
+    transition: transform .5s;
 }
 
 .navigation a:hover::after {
+    transform-origin: left;
     transform: scaleX(1);
 }
 
-.btnLogin-popup {
+.navigation .btnLogin-popup{
     width: 130px;
     height: 50px;
     background: transparent;
@@ -76,67 +73,219 @@ header {
     outline: none;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 1em;
+    font-size: 1.1em;
     color: #fff;
     font-weight: 500;
     margin-left: 40px;
-    transition: 0.3s;
+    transition: .5s;
 }
 
-.btnLogin-popup:hover {
+.navigation .btnLogin-popup:hover {
     background: #fff;
     color: #162938;
 }
 
-/* ---- Sections ---- */
-section {
-    min-height: 100vh;
-    padding: 80px 10%;
-    text-align: center;
+.wrapper {
+    position: relative;
+    width: 400px;
+    height: 440px;
+    background: transparent;
+    border: 2px solid rgba(255, 255, 255, .5);
+    border-radius: 20px;
+    backdrop-filter: blur(20px);
+    box-shadow: 0 0 30px rgba(0, 0, 0, .5);
     display: flex;
-    flex-direction: column;
     justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    transform: scale(0);
+    transition: transform .5s ease, height .2s ease;
+    position: fixed;
+    z-index: 100;
 }
 
-/* ---- Hero Section ---- */
-#home {
-    background: rgba(0, 0, 0, 0.5);
+.wrapper.active-popup {
+    transform: scale(1);
+}
+
+.wrapper.active {
+    height: 520px;
+}
+
+.wrapper .form-box {
+    width: 100%;
+    padding: 40px;
+
+}
+
+.wrapper .form-box.login {
+    transition: transform .18s ease;
+    transform: translateX(0);
+}
+
+.wrapper.active .form-box.login{
+    transition: none;
+    transform: translateX(-400px);
+}
+
+.wrapper .form-box.register {
+    position: absolute;
+    transition: none;
+    transform: translateX(400px);
+}
+
+.wrapper.active .form-box.register {
+    transition: transform .18s ease;
+    transform: translateX(0);
+}
+
+.wrapper .icon-close {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 45px;
+    height: 45px;
+    background: #162938;
+    font-size: 2em;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-bottom-left-radius: 20px;
+    cursor: pointer;
+    z-index: 1;
+}
+
+.form-box h2 {
+    font-size: 2em;
+    color: #162938;
     text-align: center;
+
 }
 
-#home h1 {
-    font-size: 3em;
-    font-weight: bold;
-    text-shadow: 2px 2px 10px black;
+.input-box {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    border-bottom: 2px solid #162938;
+    margin: 30px 0;
 }
 
-#home p {
+.input-box label{
+    position: absolute;
+    top: 50%;
+    left: 5px;
+    transform: translateY(-50%);
+    font-size: 1em;
+    color: #162938;
+    font-weight: 500;  
+    pointer-events: none;
+    transition: .5s;
+
+}
+
+.input-box input:focus~label,
+.input-box input:valid~label{
+    top: -5px;
+
+}
+
+.input-box input{
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-size: 1em;
+    color: #162938;
+    font-weight: 600;
+    padding: 0 35px 0 5px;
+
+}
+
+.input-box .icon{
+    position: absolute;
+    right: 8px;
     font-size: 1.2em;
-    margin-top: 10px;
+    color: #162938;
+    line-height: 57px;
 }
 
-/* ---- About & Projects ---- */
-#about, #projects, #weather, #contact {
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
+.remember-forgot{
+    font-size: .9em;
+    color:#162938;
+    font-weight: 500;
+    margin: -15px 0 15px;
+    display: flex;
+    justify-content: space-between;
+
+}
+
+.remember-forgot label input{
+    accent-color: #162938;
+    margin-right: 3px;
+}
+
+.remember-forgot a{
+    color: #162938;
+    text-decoration: none;
+
+}
+
+.remember-forgot a:hover {
+    text-decoration: underline;
+
+}
+
+.btn {
+    width: 100%;
+    height: 45px;
+    background: #162938;
+    border: none;
+    outline: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1em;
+    color: #fff;
+    font-weight: 500;
+}
+
+.login-register {
+    font-size: .9em;
+    color: #162938;
+    text-align: center;
+    font-weight: 500;
+    margin: 25px 0 10px;
+}
+
+.login-register p a {
+    color: #162938;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.login-register p a:hover {
+    text-decoration: underline;
+
+}
+
+
+
+
+
+
+.sms-container h2 {
+    font-size: 1.8em;
+    font-weight: bold;
+    
+    text-shadow: 
+        -1px -1px 0px black,  
+         1px -1px 0px black,
+        -1px  1px 0px black,
+         1px  1px 0px black; 
     color: white;
-    padding: 60px 10%;
-    border-radius: 15px;
-    margin: 20px auto;
 }
 
-#projects ul {
-    list-style: none;
-    padding: 0;
-}
-
-#projects li {
-    font-size: 1.2em;
-    margin: 10px 0;
-    font-weight: bold;
-}
-
-/* ---- Weather Subscription Box ---- */
 .sms-container {
     width: 350px;
     background: rgba(255, 255, 255, 0.2);
@@ -145,18 +294,12 @@ section {
     backdrop-filter: blur(10px);
     text-align: center;
     color: white;
-    margin: auto;
+    margin-top: 30px;
     border: 2px solid rgba(255, 255, 255, 0.3);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
-.sms-container h2 {
-    font-size: 1.8em;
-    font-weight: bold;
-    text-shadow: 2px 2px 5px black;
-}
-
-.sms-container input,
+.sms-container input, 
 .sms-container button {
     width: 80%;
     padding: 8px;
@@ -171,73 +314,8 @@ section {
     cursor: pointer;
 }
 
-/* ---- Contact Section ---- */
-#contact {
-    background: rgba(0, 0, 0, 0.7);
-}
-
-#contact p {
-    font-size: 1.2em;
-    font-weight: bold;
-}
-
-/* ---- Login Popup ---- */
-.wrapper {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0);
-    width: 400px;
-    height: 440px;
-    background: rgba(0, 0, 0, 0.8);
-    border-radius: 20px;
-    backdrop-filter: blur(20px);
-    box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    transition: transform 0.3s ease;
-    z-index: 1000;
-}
-
-.wrapper.active-popup {
-    transform: translate(-50%, -50%) scale(1);
-}
-
-.wrapper .icon-close {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 1.5em;
-    color: white;
-    cursor: pointer;
-}
-
-/* ---- Responsive Design ---- */
-@media screen and (max-width: 768px) {
-    header {
-        padding: 15px 20px;
-    }
-
-    .navigation a {
-        font-size: 1em;
-        margin-left: 20px;
-    }
-
-    section {
-        padding: 60px 5%;
-    }
-
-    #home h1 {
-        font-size: 2.5em;
-    }
-
-    #projects li {
-        font-size: 1em;
-    }
-
-    .sms-container {
-        width: 90%;
-    }
+#sms-status {
+    margin-top: 10px;
+    font-size: 0.9em;
+    color: rgb(0, 0, 0);
 }
