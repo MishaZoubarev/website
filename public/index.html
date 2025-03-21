@@ -4,74 +4,27 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Misha Website</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel = "stylesheet" href = "styles.css">
 </head>
 <body>
   <header> 
     <h2 class="logo">Misha's Website</h2>
     <nav class="navigation">
-      <a href="#home">Home</a>
-      <a href="#about">About</a>
-      <a href="#resume">Resume</a>
-      <a href="#projects">Projects</a>
-      <a href="#weather">Weather</a>
-      <a href="#contact">Contact</a>
+      <a href="#">Home</a>
+      <a href="#">About</a>
+      <a href="#">Resume</a>
+      <a href="#">Contact</a>
       <button class="btnLogin-popup">Login</button>
     </nav>
   </header>
 
-  <!-- Home Section -->
-  <section id="home" class="section">
-    <h1>Welcome to My Portfolio</h1>
-    <p>Web Developer & Tech Enthusiast</p>
-  </section>
-
-  <!-- About Section -->
-  <section id="about" class="section">
-    <h2>About Me</h2>
-    <p>I'm a developer passionate about building great web experiences.</p>
-  </section>
-
-  <!-- Resume Section -->
-  <section id="resume" class="section">
-    <h2>Resume</h2>
-    <p><a href="resume.pdf" target="_blank">Download my resume</a></p>
-  </section>
-
-  <!-- Projects Section -->
-  <section id="projects" class="section">
-    <h2>Projects</h2>
-    <ul>
-      <li>Typing Speed Game</li>
-      <li>Maze Solver</li>
-      <li>Weather SMS Service</li>
-    </ul>
-  </section>
-
-  <!-- Weather App Section -->
-  <section id="weather" class="section">
-    <h2>Get Daily Weather Updates</h2>
-    <form id="sms-form">
-      <input type="text" id="sms-phone" placeholder="Enter your phone number (example: +15551234567)" required>
-      <input type="text" id="sms-city" placeholder="Enter your city" required>
-      <input type="time" id="sms-time" required>
-      <button type="submit">Subscribe</button>
-    </form>
-    <p id="sms-status"></p>
-  </section>
-
-  <!-- Contact Section -->
-  <section id="contact" class="section">
-    <h2>Contact Me</h2>
-    <p>Let's connect! You can reach me at myemail@example.com</p>
-  </section>
-
-  <!-- Login/Register Popup -->
   <div class="wrapper">
     <span class="icon-close"><ion-icon name="close"></ion-icon></span>
 
     <div class="form-box login">
-      <h2>Login</h2>
+      <h2>
+        Login
+      </h2>
       <form action="#">
         <div class="input-box">
           <span class="icon"><ion-icon name="mail"></ion-icon></span>
@@ -89,13 +42,15 @@
         </div>
         <button type="submit" class="btn">Login</button>
         <div class="login-register">
-          <p>Don't have an account? <a href="#" class="register-link">Register</a></p>
+          <p>Don't have an account?<a href="#" class="register-link"> Register</a></p>
         </div>
       </form>
     </div>
 
     <div class="form-box register">
-      <h2>Registration</h2>
+      <h2>
+        Registration
+      </h2>
       <form action="#">
         <div class="input-box">
           <span class="icon"><ion-icon name="person"></ion-icon></span>
@@ -117,16 +72,29 @@
         </div>
         <button type="submit" class="btn">Register</button>
         <div class="login-register">
-          <p>Already have an account? <a href="#" class="login-link">Login</a></p>
+          <p>Already have an account?<a href="#" class="login-link"> Login</a></p>
         </div>
       </form>
     </div>
   </div>
 
-  <!-- Scripts -->
+<div class="sms-container">
+  <h2>Get Daily Weather Updates</h2>
+  <form id="sms-form">
+      <input type="text" id="sms-phone" placeholder="Enter your phone number (example: +15551234567)" required>
+      <input type="text" id="sms-city" placeholder="Enter your city" required>
+      <input type="time" id="sms-time" required>
+      <button type="submit">Subscribe</button>
+  </form>
+  <p id="sms-status"></p>
+</div>
+
+
+
   <script src="app.js"></script>
   <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
 
+  
 </body>
 </html>
