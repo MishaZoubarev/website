@@ -4,27 +4,154 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Misha Website</title>
-  <link rel = "stylesheet" href = "styles.css">
+  <link rel="stylesheet" href="styles.css">
 </head>
+<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    particlesJS("particles-js", {
+      "particles": {
+        "number": { "value": 80 },
+        "size": { "value": 3 }
+      },
+      "interactivity": {
+        "events": { "onhover": { "enable": true, "mode": "repulse" } }
+      }
+    });
+  });
+</script>
 <body>
+  <div id="particles-js"></div>
   <header> 
     <h2 class="logo">Misha's Website</h2>
     <nav class="navigation">
-      <a href="#">Home</a>
-      <a href="#">About</a>
-      <a href="#">Resume</a>
-      <a href="#">Contact</a>
+      <a href="#home">Home</a>
+      <a href="#about">About</a>
+      <a href="#resume">Resume</a>
+      <a href="#projects">Projects</a>
+      <a href="#weather">Weather</a> <!-- ✅ Added Weather Tab -->
       <button class="btnLogin-popup">Login</button>
     </nav>
   </header>
 
+  <!-- Home Section -->
+  <section id="home">
+    <h1>Welcome to My Portfolio</h1>
+    <p>Web Developer & Tech Enthusiast</p>
+  </section>
+
+  <!-- About Section -->
+  <section id="about">
+    <h1>About Me</h1>
+    <p>I'm a developer passionate about building great web experiences.</p>
+    <img src="reindeer.jpg" alt="My Profile Picture" class="profile-pic">
+  </section>
+
+  <!-- Resume Section -->
+  <section id="resume">
+    <h1>Resume</h1>
+    <p>Download my resume here.</p>
+  </section>
+
+  <!-- Project Section -->
+<section id="projects">
+  <h1>Projects</h1>
+  <p>Here are some things that I've worked on!</p>
+  
+  <div class="projects-container">
+      <!-- Typing Game -->
+      <div class="project-card">
+          <img src="keyboard.png" alt="Typing Game">
+          <div class="project-content">
+              <h3>Typing Game</h3>
+              <p>Test your typing speed in this fun interactive game.</p>
+              <p>Made using: React, Typescript, Tailwind, Framer Motion</p>
+              <div class="project-buttons">
+                  <a href="https://typinggame-three.vercel.app/" class="btn">View Project</a>
+                  <a href="https://github.com/MishaZoubarev/typinggame" class="btn">GitHub Repo</a>
+              </div>
+          </div>
+      </div>
+
+      <!-- Portfolio Website -->
+      <div class="project-card">
+          <img src="portfolio.jpg" alt="Portfolio Website">
+          <div class="project-content">
+              <h3>Portfolio Website</h3>
+              <p>The website you're looking at! Fully responsive and animated.</p>
+              <p>Made using: HTML, CSS, Javascript</p>
+              <div class="project-buttons">
+                  <a href="https://website-mauve-three-93.vercel.app/" class="btn">View Project</a>
+                  <a href="https://github.com/MishaZoubarev/website" class="btn">GitHub Repo</a>
+              </div>
+          </div>
+      </div>
+
+      <!-- Arcanist -->
+      <div class="project-card">
+          <img src="arcanist.png" alt="Arcanist">
+          <div class="project-content">
+              <h3>Arcanist</h3>
+              <p>2D Maze game group project for CMPT 276 - Intro to Software Engineering</p>
+              <p>Made with: Java, Object-oriented design, Design Patterns, Jswing GUI, Junit</p>
+              <div class="project-buttons">
+                  <a href="youtu.be/x4uGNwe5Xmk" class="btn">View Project</a>
+                  <a href="https://github.com/MishaZoubarev/Maze-Project" class="btn">GitHub Repo</a>
+              </div>
+          </div>
+      </div>
+
+      <!-- Figma Project -->
+      <div class="project-card">
+          <img src="figma.jpg" alt="Figma Design">
+          <div class="project-content">
+              <h3>Figma UI Design</h3>
+              <p>Designed and prototyped a movie recommendation app in Figma, incorporating user-centered design principles.</p>
+              <p>Made with: Figma, Prototyping, User-centered design</p>
+              <div class="project-buttons">
+                  <a href="https://www.figma.com/design/PVsMPqSqOuc0y6N2B9kiQi/Prototype-V4?node-id=0-1&t=72pOngOR7x7ZmzOr-1" class="btn">View Project</a>
+                  <a href="https://docs.google.com/document/d/18ud_jKCiGa85sn9Ltp8Pc2GbjJ10tPcFNSQABWKi-jk/edit?usp=sharing" class="btn">GitHub Repo</a>
+              </div>
+          </div>
+      </div>
+
+      <!-- Weather App -->
+      <div class="project-card">
+          <img src="weather.jpg" alt="Weather App">
+          <div class="project-content">
+              <h3>Weather App</h3>
+              <p>Get real-time weather updates via SMS notifications, built into this website!</p>
+              <p>Made with: Openweather API, Twilio API, Node.js, Express.js</p>
+              <div class="project-buttons">
+                  <a href="#weather" class="btn">View Project</a>
+                  <a href="https://github.com/MishaZoubarev/website/blob/main/server.js" class="btn">GitHub Repo</a>
+              </div>
+          </div>
+      </div>
+  </div>
+</section>
+
+
+  <!-- ✅ Weather Section (New) -->
+  <section id="weather">
+    <h1>Get Daily Weather Updates</h1>
+    <div class="sms-container">
+      <form id="sms-form">
+        <input type="text" id="sms-phone" placeholder="Enter your phone number (example: +15551234567)" required>
+        <input type="text" id="sms-city" placeholder="Enter your city" required>
+        <input type="time" id="sms-time" required>
+        <button type="submit">Subscribe</button>
+      </form>
+      <p id="sms-status"></p>
+    </div>
+  </section>
+
+  <!-- Login Pop-up (Kept Exactly the Same) -->
   <div class="wrapper">
     <span class="icon-close"><ion-icon name="close"></ion-icon></span>
-
     <div class="form-box login">
-      <h2>
-        Login
-      </h2>
+      <h2>Login</h2>
       <form action="#">
         <div class="input-box">
           <span class="icon"><ion-icon name="mail"></ion-icon></span>
@@ -42,15 +169,13 @@
         </div>
         <button type="submit" class="btn">Login</button>
         <div class="login-register">
-          <p>Don't have an account?<a href="#" class="register-link"> Register</a></p>
+          <p>Don't have an account? <a href="#" class="register-link">Register</a></p>
         </div>
       </form>
     </div>
 
     <div class="form-box register">
-      <h2>
-        Registration
-      </h2>
+      <h2>Registration</h2>
       <form action="#">
         <div class="input-box">
           <span class="icon"><ion-icon name="person"></ion-icon></span>
@@ -72,29 +197,14 @@
         </div>
         <button type="submit" class="btn">Register</button>
         <div class="login-register">
-          <p>Already have an account?<a href="#" class="login-link"> Login</a></p>
+          <p>Already have an account? <a href="#" class="login-link">Login</a></p>
         </div>
       </form>
     </div>
   </div>
 
-<div class="sms-container">
-  <h2>Get Daily Weather Updates</h2>
-  <form id="sms-form">
-      <input type="text" id="sms-phone" placeholder="Enter your phone number (example: +15551234567)" required>
-      <input type="text" id="sms-city" placeholder="Enter your city" required>
-      <input type="time" id="sms-time" required>
-      <button type="submit">Subscribe</button>
-  </form>
-  <p id="sms-status"></p>
-</div>
-
-
-
   <script src="app.js"></script>
   <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
-
-  
 </body>
 </html>
