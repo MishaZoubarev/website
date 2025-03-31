@@ -44,15 +44,41 @@
   <!-- About Section -->
   <section id="about">
     <h1>About Me</h1>
-    <p>I'm a developer passionate about building great web experiences.</p>
+    <p>I'm a passionate coder who loves to learn and work with people!</p>
+    <p>In my pass-time I'm into Sports, Gaming, Aviation, Food and Travelling to New Places :)</p>
     <img src="reindeer.jpg" alt="My Profile Picture" class="profile-pic">
   </section>
 
-  <!-- Resume Section -->
-  <section id="resume">
-    <h1>Resume</h1>
-    <p>Download my resume here.</p>
-  </section>
+  <!-- Resume Section with Slider -->
+<section id="resume">
+  <h1>Resume</h1>
+  <p>Choose a category to view:</p>
+  <div class="resume-tabs">
+    <button class="tab-button active" data-tab="tab-cs">Computer Science</button>
+    <button class="tab-button" data-tab="tab-work">Work Experience</button>
+    <button class="tab-button" data-tab="tab-contact">Contact Info</button>
+  </div>
+
+  <div class="resume-content">
+    <div class="tab-content active" id="tab-cs">
+      <img src="misharesume1_page-0001.jpg" alt="CS Resume" class="resume-image">
+      <a href="MishaZoubarevComputerScienceResume.pdf" class="btn download-btn" download>Download PDF</a>
+    </div>
+    <div class="tab-content" id="tab-work">
+      <img src="Vancouver Airport Authority Resume_page-0001.jpg" alt="Work Resume" class="resume-image">
+      <a href="MishaZoubarevWorkExperienceResume.pdf" class="btn download-btn" download>Download PDF</a>
+    </div>
+    <div class="tab-content" id="tab-contact">
+      <div class="contact-info">
+        <h2>Contact Me</h2>
+        <p>Email: misha@example.com</p>
+        <p>Phone: +1 555-123-4567</p>
+        <p>Github: <a href="https://github.com/MishaZoubarev">linkedin.com/in/mishazoubarev</a></p>
+        <p>LinkedIn: <a href="https://linkedin.com/in/mishazoubarev">linkedin.com/in/mishazoubarev</a></p>
+      </div>
+    </div>
+  </div>
+</section>
 
   <!-- Project Section -->
 <section id="projects">
@@ -206,5 +232,29 @@
   <script src="app.js"></script>
   <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
   <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const tabButtons = document.querySelectorAll(".resume-tabs button");
+      const contentSections = document.querySelectorAll(".tab-content");
+  
+      tabButtons.forEach((btn) => {
+        btn.addEventListener("click", () => {
+          tabButtons.forEach((b) => b.classList.remove("active"));
+          contentSections.forEach((sec) => sec.classList.remove("active"));
+  
+          btn.classList.add("active");
+          const selected = btn.getAttribute("data-tab");
+          document.getElementById(selected).classList.add("active");
+        });
+      });
+  
+      // Optional: set default tab active on load
+      if (tabButtons.length > 0) {
+        tabButtons[0].click();
+      }
+    });
+  </script>
+
 </body>
 </html>
