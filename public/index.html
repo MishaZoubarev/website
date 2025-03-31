@@ -30,7 +30,7 @@
       <a href="#about">About</a>
       <a href="#resume">Resume</a>
       <a href="#projects">Projects</a>
-      <a href="#weather">Weather</a> <!-- ✅ Added Weather Tab -->
+      <a href="#flight-weather-container">Weather</a> <!-- ✅ Added Weather Tab -->
       <button class="btnLogin-popup">Login</button>
     </nav>
   </header>
@@ -159,19 +159,36 @@
 </section>
 
 
-  <!-- ✅ Weather Section (New) -->
-  <section id="weather">
-    <h1>Get Daily Weather Updates</h1>
-    <div class="sms-container">
-      <form id="sms-form">
-        <input type="text" id="sms-phone" placeholder="Enter your phone number (example: +15551234567)" required>
-        <input type="text" id="sms-city" placeholder="Enter your city" required>
-        <input type="time" id="sms-time" required>
-        <button type="submit">Subscribe</button>
-      </form>
-      <p id="sms-status"></p>
-    </div>
-  </section>
+<!-- ✈️ Flight Tracker Section - Placed beside Weather Section -->
+<section id="flight-weather-container">
+  <div class="sms-container">
+    <h2>Get Daily Weather Updates</h2>
+    <form id="sms-form">
+      <input type="text" id="sms-phone" placeholder="Enter Number (ex: +15551234567)" required>
+      <input type="text" id="sms-city" placeholder="Enter your city" required>
+      <input type="time" id="sms-time" required>
+      <button type="submit">Subscribe</button>
+    </form>
+    <p id="sms-status"></p>
+  </div>
+
+  <div class="sms-container">
+    <h2>Track Your Flight</h2>
+    <form id="flight-form">
+      <input type="text" id="flight-number" placeholder="IATA flight code (e.g., AC123)" required>
+      <button type="submit">Check Flight</button>
+    </form>
+
+    <p id="flight-status" style="margin-top: 15px; text-align: left;"></p>
+
+    <form id="flight-sms-form" style="margin-top: 20px; display: none;">
+      <input type="text" id="flight-phone" placeholder="Your phone number" required>
+      <input type="time" id="flight-time" required>
+      <button type="submit">Schedule SMS Reminder</button>
+    </form>
+    <p id="flight-sms-status"></p>
+  </div>
+</section>
 
   <!-- Login Pop-up (Kept Exactly the Same) -->
   <div class="wrapper">
@@ -255,6 +272,66 @@
       }
     });
   </script>
+
+<script>
+  // Fetch flight info
+  document.getElementById("flight-form").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const flightNumber = document.getElementById("flight-number").value.trim();
+    const infoBox = document.getElementById("flight-info");
+    const smsForm = document.getElementById("flight-sms-form");
+    const statusText = document.getElementById("flight-sms-status");
+    infoBox.innerHTML = "Checking flight...";
+
+    try {
+      const res = await fetch("/api/flight", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ flight: flightNumber })
+      });
+      const data = await res.json();
+      if (data.error) {
+        infoBox.innerHTML = `<span style='color:red;'>${data.error}</span>`;
+        smsForm.style.display = "none";
+        return;
+      }
+      infoBox.innerHTML = `
+        <strong>Status:</strong> ${data.status}<br>
+        <strong>Departure:</strong> ${data.departure}<br>
+        <strong>Arrival:</strong> ${data.arrival}<br>
+        <strong>ETA:</strong> ${data.eta}<br>
+      `;
+      smsForm.style.display = "block";
+      smsForm.setAttribute("data-msg", `Flight ${flightNumber} - ${data.status} (ETA: ${data.eta})`);
+    } catch (err) {
+      infoBox.innerHTML = `<span style='color:red;'>Failed to fetch flight info.</span>`;
+      smsForm.style.display = "none";
+    }
+  });
+
+  // Schedule flight SMS
+  document.getElementById("flight-sms-form").addEventListener("submit", async function (e) {
+    e.preventDefault();
+    const phone = document.getElementById("flight-phone").value.trim();
+    const time = document.getElementById("flight-time").value.trim();
+    const message = this.getAttribute("data-msg");
+    const status = document.getElementById("flight-sms-status");
+    status.innerText = "Scheduling SMS...";
+
+    try {
+      const res = await fetch("/api/flight-sms", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ phone, time, message })
+      });
+      const data = await res.json();
+      status.innerText = data.message || "SMS scheduled!";
+    } catch (err) {
+      status.innerText = "Failed to schedule SMS.";
+    }
+  });
+</script>
+
 
 </body>
 </html>
