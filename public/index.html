@@ -314,7 +314,7 @@
     e.preventDefault();
     const phone = document.getElementById("flight-phone").value.trim();
     const time = document.getElementById("flight-time").value.trim();
-    const message = this.getAttribute("data-msg");
+    const flight = document.getElementById("flight-number").value.trim();
     const status = document.getElementById("flight-sms-status");
     status.innerText = "Scheduling SMS...";
 
@@ -322,7 +322,7 @@
       const res = await fetch("/subscribe-flight", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ phone, time, message })
+        body: JSON.stringify({ phone, flight, time })
       });
       const data = await res.json();
       status.innerText = data.message || "SMS scheduled!";
