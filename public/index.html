@@ -319,7 +319,7 @@
     status.innerText = "Scheduling SMS...";
 
     try {
-      const res = await fetch("/api/flight-sms", {
+      const res = await fetch("/subscribe-flight", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ phone, time, message })
