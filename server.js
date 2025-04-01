@@ -22,7 +22,7 @@ const AVIATIONSTACK_API_KEY = process.env.AVIATIONSTACK_API_KEY;
 const weatherSubscribers = [];
 const flightSubscribers = []; // { phone, flight, time }
 
-app.use(cors({ origin: "*", methods: ["GET", "POST"], allowedHeaders: ["Content-Type"], credentials: true }));
+//app.use(cors({ origin: "*", methods: ["GET", "POST"], allowedHeaders: ["Content-Type"], credentials: true }));
 app.use(bodyParser.json());
 app.use(express.static(path.join(__dirname, "public")));
 

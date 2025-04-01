@@ -278,7 +278,7 @@
   document.getElementById("flight-form").addEventListener("submit", async function (e) {
     e.preventDefault();
     const flightNumber = document.getElementById("flight-number").value.trim();
-    const infoBox = document.getElementById("flight-info");
+    const infoBox = document.getElementById("flight-status");
     const smsForm = document.getElementById("flight-sms-form");
     const statusText = document.getElementById("flight-sms-status");
     infoBox.innerHTML = "Checking flight...";
