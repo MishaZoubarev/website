@@ -87,12 +87,32 @@ app.get("/api/flight-info", async (req, res) => {
 });
 
 // Subscribe for flight SMS
-app.post("/subscribe-flight", (req, res) => {
+//app.post("/subscribe-flight", (req, res) => {
+  //const { phone, flight, time } = req.body;
+  //if (!phone || !flight || !time) return res.status(400).json({ message: "All fields are required." });
+  //flightSubscribers.push({ phone, flight, time });
+  //res.json({ message: "Flight alert scheduled!" });
+//});
+
+app.post("/subscribe-flight", async (req, res) => {
   const { phone, flight, time } = req.body;
   if (!phone || !flight || !time) return res.status(400).json({ message: "All fields are required." });
-  flightSubscribers.push({ phone, flight, time });
-  res.json({ message: "Flight alert scheduled!" });
+
+  try {
+    const response = await axios.get(`http://api.aviationstack.com/v1/flights?access_key=${AVIATIONSTACK_API_KEY}&flight_iata=${flight}`);
+    const data = response.data.data[0];
+    if (!data) return res.status(404).json({ message: "Flight not found." });
+
+    const msg = `✈️ Flight ${flight} (${data.airline.name}): Status - ${data.flight_status}. ETA: ${data.arrival.estimated}`;
+    await twilioClient.messages.create({ body: msg, from: TWILIO_PHONE, to: phone });
+
+    res.json({ message: "Flight SMS sent!" });
+  } catch (err) {
+    console.error("❌ Flight SMS Error:", err.message);
+    res.status(500).json({ message: "Failed to send flight SMS." });
+  }
 });
+
 
 const sendFlightUpdates = async () => {
   for (let user of flightSubscribers) {
