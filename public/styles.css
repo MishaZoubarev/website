@@ -596,14 +596,14 @@ section {
     display: flex;
     align-items: center;
     justify-content: center;
-    pointer-events: none; /* So it doesn't block any clicks */
+    pointer-events: none; /* so it doesn't block interaction */
     animation: fadeOut 5s ease forwards;
     animation-delay: 4s;
   }
   
   .plane {
-    width: 60px;
-    height: 60px;
+    font-size: 60px;
+    color: white;
     position: absolute;
     left: -80px;
     animation: flyAcross 4s ease-in-out forwards;
@@ -631,3 +631,4 @@ section {
   @keyframes fadeOut {
     to { opacity: 0; visibility: hidden; }
   }
+  
