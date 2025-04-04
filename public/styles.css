@@ -602,11 +602,31 @@ section {
   }
   
   .plane {
-    font-size: 60px;
+    font-size: 80px;
     color: white;
     position: absolute;
     left: -80px;
     animation: flyAcross 4s ease-in-out forwards;
+    text-shadow: 2px 2px 10px rgba(255, 255, 255, 0.6);
+  }
+
+  .plane::after {
+    content: '';
+    position: absolute;
+    width: 80px;
+    height: 10px;
+    left: -100px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: linear-gradient(to right, rgba(255, 255, 255, 0.3), transparent);
+    filter: blur(4px);
+    opacity: 0.8;
+    animation: trailFade 4s ease-in-out forwards;
+  }
+
+  @keyframes trailFade {
+    0% { opacity: 0.8; }
+    100% { opacity: 0; }
   }
   
   @keyframes flyAcross {
