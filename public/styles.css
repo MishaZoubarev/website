@@ -586,3 +586,48 @@ section {
     background: #1d4f73;
 }
 
+.plane-container {
+    position: fixed;
+    top: 30%;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none; /* So it doesn't block any clicks */
+    animation: fadeOut 5s ease forwards;
+    animation-delay: 4s;
+  }
+  
+  .plane {
+    width: 60px;
+    height: 60px;
+    position: absolute;
+    left: -80px;
+    animation: flyAcross 4s ease-in-out forwards;
+  }
+  
+  @keyframes flyAcross {
+    0% { left: -80px; top: 30%; }
+    50% { top: 20%; }
+    100% { left: 100vw; top: 30%; }
+  }
+  
+  .welcome-text {
+    font-size: 3em;
+    color: white;
+    text-shadow: 1px 1px 4px black;
+    opacity: 0;
+    animation: fadeIn 2s ease forwards;
+    animation-delay: 1s;
+  }
+  
+  @keyframes fadeIn {
+    to { opacity: 1; }
+  }
+  
+  @keyframes fadeOut {
+    to { opacity: 0; visibility: hidden; }
+  }
