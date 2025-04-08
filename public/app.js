@@ -93,3 +93,34 @@ flightForm?.addEventListener("submit", async function (e) {
     flightStatusDiv.textContent = "❌ Something went wrong. Please try again.";
   }
 });
+
+const nhlForm = document.getElementById("nhl-form");
+const nhlResult = document.getElementById("nhl-result");
+
+nhlForm?.addEventListener("submit", async function (e) {
+  e.preventDefault();
+  const player = document.getElementById("nhl-player").value.trim();
+  nhlResult.innerHTML = "Searching...";
+
+  try {
+    const res = await fetch(`/api/player-stats?name=${encodeURIComponent(player)}`);
+    const data = await res.json();
+
+    if (data.error) {
+      nhlResult.innerHTML = `<span style="color:red;">${data.error}</span>`;
+      return;
+    }
+
+    nhlResult.innerHTML = `
+      <strong>${data.name}</strong><br>
+      🏒 Position: ${data.position}<br>
+      🏒 Team: ${data.team}<br>
+      📊 Goals: ${data.stats.goals || 0}<br>
+      📊 Assists: ${data.stats.assists || 0}<br>
+      📊 Points: ${data.stats.points || 0}<br>
+      🕒 Games Played: ${data.stats.gamesPlayed || 0}
+    `;
+  } catch (err) {
+    nhlResult.innerHTML = `<span style="color:red;">Failed to fetch stats.</span>`;
+  }
+});

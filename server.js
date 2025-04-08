@@ -131,6 +131,42 @@ const sendFlightUpdates = async () => {
   }
 };
 
+app.get("/api/player-stats", async (req, res) => {
+  const playerName = req.query.name;
+  if (!playerName) return res.status(400).json({ error: "Player name is required." });
+
+  try {
+    // Step 1: Search for player ID
+    const searchUrl = `https://search.d3.nhle.com/api/v1/search/player?culture=en-us&limit=10&q=${encodeURIComponent(playerName)}`;
+    const searchRes = await axios.get(searchUrl);
+    const results = searchRes.data.documents;
+
+    if (!results || results.length === 0) {
+      return res.status(404).json({ error: "Player not found." });
+    }
+
+    const player = results[0];
+    const playerId = player.id;
+
+    // Step 2: Get stats for this player
+    const statsUrl = `https://api-web.nhle.com/v1/player/${playerId}/landing`;
+    const statsRes = await axios.get(statsUrl);
+    const playerInfo = statsRes.data;
+
+    const summary = {
+      name: `${playerInfo.firstName.default} ${playerInfo.lastName.default}`,
+      position: playerInfo.primaryPosition,
+      team: playerInfo.currentTeam?.name.default || "N/A",
+      stats: playerInfo?.featuredStats?.regularSeason?.subSeason?.[0] || {},
+    };
+
+    res.json(summary);
+  } catch (err) {
+    console.error("NHL API Error:", err.message);
+    res.status(500).json({ error: "Could not fetch player stats." });
+  }
+});
+
 // Cron jobs for both
 cron.schedule("* * * * *", () => {
   console.log("⏳ Running scheduled jobs...");
