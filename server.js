@@ -131,9 +131,9 @@ app.get("/api/player-stats", async (req, res) => {
     }
 
     const summary = {
-      name: `${player.firstName} ${player.lastName}`,
-      team: player.teamFullName || "0",
-      position: player.positionCode || "0",
+      name: `${player.firstName || ""} ${player.lastName || ""}`.trim(),
+      team: player.teamFullName || "N/A",
+      position: player.positionCode || "N/A",
       stats: {
         goals: player.goals || 0,
         assists: player.assists || 0,
@@ -148,6 +148,7 @@ app.get("/api/player-stats", async (req, res) => {
     res.status(500).json({ error: "Could not fetch player stats." });
   }
 });
+
 
 
 
