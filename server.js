@@ -132,8 +132,8 @@ app.get("/api/player-stats", async (req, res) => {
 
     const summary = {
       name: `${player.firstName} ${player.lastName}`,
-      team: player.teamFullName || "N/A",
-      position: player.positionCode || "N/A",
+      team: player.teamFullName || "0",
+      position: player.positionCode || "0",
       stats: {
         goals: player.goals || 0,
         assists: player.assists || 0,
