@@ -127,11 +127,15 @@ app.get("/api/player-stats", async (req, res) => {
     const searchRes = await axios.get(searchUrl);
     const results = searchRes.data.documents;
 
-    if (!results || results.length === 0) {
-      return res.status(404).json({ error: "Player not found." });
+    const matchedPlayer = results.find(p =>
+      `${p.firstName} ${p.lastName}`.toLowerCase() === playerName.toLowerCase()
+    );
+
+    if (!matchedPlayer) {
+      return res.status(404).json({ error: "Exact player not found." });
     }
 
-    const playerId = results[0].id;
+    const playerId = matchedPlayer.id;
 
     // Step 2: Use the ID to fetch detailed player info
     const statsUrl = `https://api-web.nhle.com/v1/player/${playerId}/landing`;
@@ -151,6 +155,7 @@ app.get("/api/player-stats", async (req, res) => {
     res.status(500).json({ error: "Could not fetch player stats." });
   }
 });
+
 
 
 
