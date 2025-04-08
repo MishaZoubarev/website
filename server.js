@@ -116,28 +116,12 @@ const sendFlightUpdates = async () => {
 
 // ✅ NHL Player Stats
 app.get("/api/player-stats", async (req, res) => {
-  const playerName = req.query.name;
-  if (!playerName) {
-    return res.status(400).json({ error: "Player name is required." });
+  const playerId = req.query.id;
+  if (!playerId) {
+    return res.status(400).json({ error: "Player ID is required." });
   }
 
   try {
-    // Step 1: Get the player's ID
-    const searchUrl = `https://search.d3.nhle.com/api/v1/search/player?culture=en-us&limit=5&q=${encodeURIComponent(playerName)}`;
-    const searchRes = await axios.get(searchUrl);
-    const results = searchRes.data.documents;
-
-    const matchedPlayer = results.find(p =>
-      `${p.firstName} ${p.lastName}`.toLowerCase() === playerName.toLowerCase()
-    );
-
-    if (!matchedPlayer) {
-      return res.status(404).json({ error: "Exact player not found." });
-    }
-
-    const playerId = matchedPlayer.id;
-
-    // Step 2: Use the ID to fetch detailed player info
     const statsUrl = `https://api-web.nhle.com/v1/player/${playerId}/landing`;
     const statsRes = await axios.get(statsUrl);
     const player = statsRes.data;
@@ -155,6 +139,7 @@ app.get("/api/player-stats", async (req, res) => {
     res.status(500).json({ error: "Could not fetch player stats." });
   }
 });
+
 
 
 
