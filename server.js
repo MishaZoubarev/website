@@ -122,32 +122,37 @@ app.get("/api/player-stats", async (req, res) => {
   }
 
   try {
-    // Fetch player details
-    const playerResponse = await axios.get(`https://statsapi.web.nhl.com/api/v1/people/${playerId}`);
-    const playerData = playerResponse.data.people[0];
+    // Step 1: Get base player data
+    const statsUrl = `https://api-web.nhle.com/v1/player/${playerId}/landing`;
+    const statsRes = await axios.get(statsUrl);
+    const player = statsRes.data;
 
-    // Fetch current team details
-    const teamId = playerData.currentTeam?.id;
+    const name = `${player.firstName?.default || "Unknown"} ${player.lastName?.default || ""}`;
+    const position = player.primaryPosition || "N/A";
+    const teamId = player.currentTeam?.id;
+
+    // Step 2: Look up team name (if teamId exists)
     let teamName = "N/A";
     if (teamId) {
-      const teamResponse = await axios.get(`https://statsapi.web.nhl.com/api/v1/teams/${teamId}`);
-      teamName = teamResponse.data.teams[0].name;
+      try {
+        const teamRes = await axios.get(`https://api-web.nhle.com/v1/team/${teamId}/landing`);
+        teamName = teamRes.data.teamName.default || "N/A";
+      } catch (err) {
+        console.warn(`Team lookup failed for teamId ${teamId}:`, err.message);
+      }
     }
 
-    // Fetch season-specific statistics
-    const season = "20242025"; // Replace with desired season
-    const statsResponse = await axios.get(`https://statsapi.web.nhl.com/api/v1/people/${playerId}/stats?stats=statsSingleSeason&season=${season}`);
-    const stats = statsResponse.data.stats[0].splits[0]?.stat || {};
-
+    // Step 3: Grab stats (fallback to empty values if missing)
+    const statObj = player.featuredStats?.regularSeason?.subSeason?.[0] || {};
     const summary = {
-      name: `${playerData.fullName}`,
-      position: playerData.primaryPosition?.name || "N/A",
+      name,
+      position,
       team: teamName,
       stats: {
-        goals: stats.goals || 0,
-        assists: stats.assists || 0,
-        points: stats.points || 0,
-        gamesPlayed: stats.games || 0,
+        goals: statObj.goals || 0,
+        assists: statObj.assists || 0,
+        points: statObj.points || 0,
+        gamesPlayed: statObj.gamesPlayed || 0,
       },
     };
 
@@ -157,6 +162,7 @@ app.get("/api/player-stats", async (req, res) => {
     res.status(500).json({ error: "Could not fetch player stats." });
   }
 });
+
 
 
 
