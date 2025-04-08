@@ -120,19 +120,21 @@ app.get("/api/player-stats", async (req, res) => {
   if (!playerName) return res.status(400).json({ error: "Player name is required." });
 
   try {
-    // Build cayenneExp properly
-    const cayenneExp = `fullName="${playerName}"`;
-    const encodedExp = encodeURIComponent(cayenneExp);
-
-    const url = `https://api.nhle.com/stats/rest/en/skater/summary?cayenneExp=${encodedExp}`;
-    const response = await axios.get(url);
+    const encoded = encodeURIComponent(`fullName="${playerName}"`);
+    const url = `https://api.nhle.com/stats/rest/en/skater/summary?cayenneExp=${encoded}`;
+    const response = await axios.get(url, {
+      headers: {
+        "User-Agent": "Mozilla/5.0",
+        "Accept": "application/json"
+      }
+    });
 
     const players = response.data.data;
     if (!players || players.length === 0) {
       return res.status(404).json({ error: "Player not found." });
     }
 
-    const p = players[0]; // Best match
+    const p = players[0];
     const summary = {
       name: `${p.firstName} ${p.lastName}`,
       team: p.teamFullName,
@@ -151,6 +153,7 @@ app.get("/api/player-stats", async (req, res) => {
     res.status(500).json({ error: "Could not fetch player stats." });
   }
 });
+
 
 
 
