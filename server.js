@@ -122,7 +122,7 @@ app.get("/api/player-stats", async (req, res) => {
   }
 
   try {
-    // Get player stats
+    // Stats from skater summary
     const statsUrl = `https://api.nhle.com/stats/rest/en/skater/summary?cayenneExp=playerId=${playerId}`;
     const statsRes = await axios.get(statsUrl);
     const statsData = statsRes.data?.data?.[0];
@@ -131,15 +131,20 @@ app.get("/api/player-stats", async (req, res) => {
       return res.status(404).json({ error: "Player stats not found." });
     }
 
-    // Get player metadata (name, team, position)
+    // Metadata from player landing page
     const profileUrl = `https://api-web.nhle.com/v1/player/${playerId}/landing`;
     const profileRes = await axios.get(profileUrl);
     const profile = profileRes.data;
 
+    // Debug log (optional): view what keys exist
+    console.log("🧠 Profile keys:", Object.keys(profile));
+    console.log("👕 Team:", profile.currentTeam);
+    console.log("🎯 Position:", profile.primaryPosition);
+
     const summary = {
-      name: `${profile.firstName?.default || "Unknown"} ${profile.lastName?.default || ""}`.trim(),
-      team: profile.currentTeam?.name?.default || "N/A",
-      position: profile.primaryPosition || "N/A",
+      name: `${profile.firstName?.default || ""} ${profile.lastName?.default || ""}`.trim(),
+      team: profile.currentTeam?.abbrev || profile.currentTeam?.name?.default || "N/A",
+      position: profile.primaryPositionAbbrev || profile.primaryPosition || "N/A",
       stats: {
         goals: statsData.goals || 0,
         assists: statsData.assists || 0,
@@ -154,6 +159,7 @@ app.get("/api/player-stats", async (req, res) => {
     res.status(500).json({ error: "Could not fetch player stats." });
   }
 });
+
 
 
 
