@@ -122,46 +122,44 @@ app.get("/api/player-stats", async (req, res) => {
   }
 
   try {
-    // Step 1: Get base player data
-    const statsUrl = `https://api-web.nhle.com/v1/player/${playerId}/landing`;
-    const statsRes = await axios.get(statsUrl);
-    const player = statsRes.data;
+    // Get player summary info (name, etc.)
+    const playerUrl = `https://api-web.nhle.com/v1/player/${playerId}/landing`;
+    const playerRes = await axios.get(playerUrl);
+    const player = playerRes.data;
 
     const name = `${player.firstName?.default || "Unknown"} ${player.lastName?.default || ""}`;
     const position = player.primaryPosition || "N/A";
-    const teamId = player.currentTeam?.id;
 
-    // Step 2: Look up team name (if teamId exists)
-    let teamName = "N/A";
-    if (teamId) {
-      try {
-        const teamRes = await axios.get(`https://api-web.nhle.com/v1/team/${teamId}/landing`);
-        teamName = teamRes.data.teamName.default || "N/A";
-      } catch (err) {
-        console.warn(`Team lookup failed for teamId ${teamId}:`, err.message);
-      }
+    // Get stats from the reliable endpoint
+    const statsUrl = `https://api.nhle.com/stats/rest/en/skater/summary?cayenneExp=playerId=${playerId}`;
+    const statsRes = await axios.get(statsUrl);
+    const data = statsRes.data?.data?.[0];
+
+    if (!data) {
+      return res.status(404).json({ error: "Stats not found for this player." });
     }
 
-    // Step 3: Grab stats (fallback to empty values if missing)
-    const statObj = player.featuredStats?.regularSeason?.subSeason?.[0] || {};
+    const teamName = data.teamFullName || "N/A";
+
     const summary = {
       name,
       position,
       team: teamName,
       stats: {
-        goals: statObj.goals || 0,
-        assists: statObj.assists || 0,
-        points: statObj.points || 0,
-        gamesPlayed: statObj.gamesPlayed || 0,
+        goals: data.goals || 0,
+        assists: data.assists || 0,
+        points: data.points || 0,
+        gamesPlayed: data.gamesPlayed || 0,
       },
     };
 
     res.json(summary);
   } catch (err) {
-    console.error("NHL API Error:", err.message);
+    console.error("NHL Stats API Error:", err.message);
     res.status(500).json({ error: "Could not fetch player stats." });
   }
 });
+
 
 
 
