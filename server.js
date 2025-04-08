@@ -121,15 +121,14 @@ app.get("/api/player-stats", async (req, res) => {
 
   try {
     const url = "https://api.nhle.com/stats/rest/en/skater/summary?isAggregate=false&isGame=false&sort=[{%22property%22:%22points%22,%22direction%22:%22DESC%22}]&start=0&limit=1000";
-    const response = await axios.get(url);
-
-    if (!response.data || !response.data.data) {
-      console.error("Malformed response:", response.data);
-      return res.status(500).json({ error: "NHL API returned invalid structure." });
-    }
+    const response = await axios.get(url, {
+      headers: {
+        "User-Agent": "Mozilla/5.0",
+        "Accept": "application/json"
+      }
+    });
 
     const players = response.data.data;
-
     const match = players.find((p) => {
       const fullName = `${p.firstName} ${p.lastName}`.toLowerCase();
       return fullName === playerName.toLowerCase();
@@ -154,10 +153,10 @@ app.get("/api/player-stats", async (req, res) => {
     res.json(summary);
   } catch (err) {
     console.error("NHL API Error:", err.message);
-    console.error(err.stack); // <- ✅ shows full internal trace
     res.status(500).json({ error: "Could not fetch player stats." });
   }
 });
+
 
 
 
