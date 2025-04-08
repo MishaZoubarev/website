@@ -120,7 +120,7 @@ app.get("/api/player-stats", async (req, res) => {
   if (!playerName) return res.status(400).json({ error: "Player name is required." });
 
   try {
-    const url = "https://api.nhle.com/stats/rest/en/skater/summary?isAggregate=false&isGame=false&sort=[{%22property%22:%22points%22,%22direction%22:%22DESC%22}]&start=0&limit=1000";
+    const url = `https://api.nhle.com/stats/rest/en/skater/summary?cayenneExp=fullName="${encodeURIComponent(playerName)}"`;
     const response = await axios.get(url, {
       headers: {
         "User-Agent": "Mozilla/5.0",
@@ -128,25 +128,18 @@ app.get("/api/player-stats", async (req, res) => {
       }
     });
 
-    const players = response.data.data;
-    const match = players.find((p) => {
-      const fullName = `${p.firstName} ${p.lastName}`.toLowerCase();
-      return fullName === playerName.toLowerCase();
-    });
-
-    if (!match) {
-      return res.status(404).json({ error: "Player not found." });
-    }
+    const data = response.data.data?.[0];
+    if (!data) return res.status(404).json({ error: "Player not found." });
 
     const summary = {
-      name: `${match.firstName} ${match.lastName}`,
-      team: match.teamFullName,
-      position: match.positionCode,
+      name: data.fullName,
+      team: data.teamFullName,
+      position: data.positionCode,
       stats: {
-        goals: match.goals,
-        assists: match.assists,
-        points: match.points,
-        gamesPlayed: match.gamesPlayed,
+        goals: data.goals,
+        assists: data.assists,
+        points: data.points,
+        gamesPlayed: data.gamesPlayed,
       },
     };
 
@@ -156,6 +149,7 @@ app.get("/api/player-stats", async (req, res) => {
     res.status(500).json({ error: "Could not fetch player stats." });
   }
 });
+
 
 
 
