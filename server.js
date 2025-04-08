@@ -117,34 +117,32 @@ const sendFlightUpdates = async () => {
 // ✅ NHL Player Stats
 app.get("/api/player-stats", async (req, res) => {
   const playerName = req.query.name;
-  if (!playerName) return res.status(400).json({ error: "Player name is required." });
+  if (!playerName) {
+    return res.status(400).json({ error: "Player name is required." });
+  }
 
   try {
-    const encoded = encodeURIComponent(`fullName="${playerName}"`);
-    const url = `https://api.nhle.com/stats/rest/en/skater/summary?cayenneExp=${encoded}`;
-    const response = await axios.get(url, {
-      headers: {
-        "User-Agent": "Mozilla/5.0",
-        "Accept": "application/json"
-      }
-    });
+    // Step 1: Get the player's ID
+    const searchUrl = `https://search.d3.nhle.com/api/v1/search/player?culture=en-us&limit=5&q=${encodeURIComponent(playerName)}`;
+    const searchRes = await axios.get(searchUrl);
+    const results = searchRes.data.documents;
 
-    const players = response.data.data;
-    if (!players || players.length === 0) {
+    if (!results || results.length === 0) {
       return res.status(404).json({ error: "Player not found." });
     }
 
-    const p = players[0];
+    const playerId = results[0].id;
+
+    // Step 2: Use the ID to fetch detailed player info
+    const statsUrl = `https://api-web.nhle.com/v1/player/${playerId}/landing`;
+    const statsRes = await axios.get(statsUrl);
+    const player = statsRes.data;
+
     const summary = {
-      name: `${p.firstName} ${p.lastName}`,
-      team: p.teamFullName,
-      position: p.positionCode,
-      stats: {
-        goals: p.goals,
-        assists: p.assists,
-        points: p.points,
-        gamesPlayed: p.gamesPlayed,
-      },
+      name: `${player.firstName.default} ${player.lastName.default}`,
+      team: player.currentTeam?.name?.default || "N/A",
+      position: player.primaryPosition || "N/A",
+      stats: player.featuredStats?.regularSeason?.subSeason?.[0] || {}
     };
 
     res.json(summary);
@@ -153,6 +151,7 @@ app.get("/api/player-stats", async (req, res) => {
     res.status(500).json({ error: "Could not fetch player stats." });
   }
 });
+
 
 
 
