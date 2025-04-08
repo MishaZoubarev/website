@@ -1,6 +1,5 @@
 require("dotenv").config();
 const express = require("express");
-const cors = require("cors");
 const bodyParser = require("body-parser");
 const axios = require("axios");
 const cron = require("node-cron");
@@ -10,27 +9,19 @@ const path = require("path");
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Twilio Setup
 const twilioClient = twilio(process.env.TWILIO_SID, process.env.TWILIO_AUTH_TOKEN);
 const TWILIO_PHONE = process.env.TWILIO_PHONE;
-
-// OpenWeather API Key
 const WEATHER_API_KEY = process.env.WEATHER_API_KEY;
 const AVIATIONSTACK_API_KEY = process.env.AVIATIONSTACK_API_KEY;
 
-// Store user subscriptions
 const weatherSubscribers = [];
-const flightSubscribers = []; // { phone, flight, time }
+const flightSubscribers = [];
 
-//app.use(cors({ origin: "*", methods: ["GET", "POST"], allowedHeaders: ["Content-Type"], credentials: true }));
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, "public")));
 
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
+/* ========== API ROUTES FIRST ========== */
 
-// Weather Subscription
+// ✅ Weather SMS
 app.post("/subscribe", async (req, res) => {
   const { phone, city, time } = req.body;
   if (!phone || !city || !time) return res.status(400).json({ message: "All fields are required." });
@@ -61,7 +52,7 @@ const sendWeatherUpdates = async () => {
   }
 };
 
-// Flight Info Route
+// ✅ Flight info lookup
 app.get("/api/flight-info", async (req, res) => {
   const { flight } = req.query;
   if (!flight) return res.status(400).json({ message: "Flight number is required." });
@@ -86,14 +77,7 @@ app.get("/api/flight-info", async (req, res) => {
   }
 });
 
-// Subscribe for flight SMS
-//app.post("/subscribe-flight", (req, res) => {
-  //const { phone, flight, time } = req.body;
-  //if (!phone || !flight || !time) return res.status(400).json({ message: "All fields are required." });
-  //flightSubscribers.push({ phone, flight, time });
-  //res.json({ message: "Flight alert scheduled!" });
-//});
-
+// ✅ Flight SMS
 app.post("/subscribe-flight", async (req, res) => {
   const { phone, flight, time } = req.body;
   if (!phone || !flight || !time) return res.status(400).json({ message: "All fields are required." });
@@ -113,7 +97,6 @@ app.post("/subscribe-flight", async (req, res) => {
   }
 });
 
-
 const sendFlightUpdates = async () => {
   for (let user of flightSubscribers) {
     try {
@@ -131,12 +114,12 @@ const sendFlightUpdates = async () => {
   }
 };
 
+// ✅ NHL Player Stats
 app.get("/api/player-stats", async (req, res) => {
   const playerName = req.query.name;
   if (!playerName) return res.status(400).json({ error: "Player name is required." });
 
   try {
-    // Step 1: Search for player ID
     const searchUrl = `https://search.d3.nhle.com/api/v1/search/player?culture=en-us&limit=10&q=${encodeURIComponent(playerName)}`;
     const searchRes = await axios.get(searchUrl);
     const results = searchRes.data.documents;
@@ -148,7 +131,6 @@ app.get("/api/player-stats", async (req, res) => {
     const player = results[0];
     const playerId = player.id;
 
-    // Step 2: Get stats for this player
     const statsUrl = `https://api-web.nhle.com/v1/player/${playerId}/landing`;
     const statsRes = await axios.get(statsUrl);
     const playerInfo = statsRes.data;
@@ -167,11 +149,18 @@ app.get("/api/player-stats", async (req, res) => {
   }
 });
 
-// Cron jobs for both
+/* ========== STATIC FILES AND INDEX LAST ========== */
+app.use(express.static(path.join(__dirname, "public")));
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+/* ========== CRON JOBS ========== */
 cron.schedule("* * * * *", () => {
   console.log("⏳ Running scheduled jobs...");
   sendWeatherUpdates();
   sendFlightUpdates();
 });
 
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log(`✅ Server running on port ${PORT}`));
