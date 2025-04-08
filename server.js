@@ -120,26 +120,31 @@ app.get("/api/player-stats", async (req, res) => {
   if (!playerName) return res.status(400).json({ error: "Player name is required." });
 
   try {
-    const searchUrl = `https://search.d3.nhle.com/api/v1/search/player?culture=en-us&limit=10&q=${encodeURIComponent(playerName)}`;
-    const searchRes = await axios.get(searchUrl);
-    const results = searchRes.data.documents;
+    // Get full list of skaters from the NHL stats endpoint
+    const url = "https://api.nhle.com/stats/rest/en/skater/summary?isAggregate=false&isGame=false&sort=[{%22property%22:%22points%22,%22direction%22:%22DESC%22}]&start=0&limit=1000";
+    const response = await axios.get(url);
+    const players = response.data.data;
 
-    if (!results || results.length === 0) {
+    // Try to match by full name (case-insensitive)
+    const match = players.find((p) => {
+      const fullName = `${p.firstName} ${p.lastName}`.toLowerCase();
+      return fullName === playerName.toLowerCase();
+    });
+
+    if (!match) {
       return res.status(404).json({ error: "Player not found." });
     }
 
-    const player = results[0];
-    const playerId = player.id;
-
-    const statsUrl = `https://api-web.nhle.com/v1/player/${playerId}/landing`;
-    const statsRes = await axios.get(statsUrl);
-    const playerInfo = statsRes.data;
-
     const summary = {
-      name: `${playerInfo.firstName.default} ${playerInfo.lastName.default}`,
-      position: playerInfo.primaryPosition,
-      team: playerInfo.currentTeam?.name.default || "N/A",
-      stats: playerInfo?.featuredStats?.regularSeason?.subSeason?.[0] || {},
+      name: `${match.firstName} ${match.lastName}`,
+      team: match.teamFullName,
+      position: match.positionCode,
+      stats: {
+        goals: match.goals,
+        assists: match.assists,
+        points: match.points,
+        gamesPlayed: match.gamesPlayed,
+      },
     };
 
     res.json(summary);
@@ -148,6 +153,7 @@ app.get("/api/player-stats", async (req, res) => {
     res.status(500).json({ error: "Could not fetch player stats." });
   }
 });
+
 
 /* ========== STATIC FILES AND INDEX LAST ========== */
 app.use(express.static(path.join(__dirname, "public")));
