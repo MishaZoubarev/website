@@ -120,12 +120,16 @@ app.get("/api/player-stats", async (req, res) => {
   if (!playerName) return res.status(400).json({ error: "Player name is required." });
 
   try {
-    // Get full list of skaters from the NHL stats endpoint
     const url = "https://api.nhle.com/stats/rest/en/skater/summary?isAggregate=false&isGame=false&sort=[{%22property%22:%22points%22,%22direction%22:%22DESC%22}]&start=0&limit=1000";
     const response = await axios.get(url);
+
+    if (!response.data || !response.data.data) {
+      console.error("Malformed response:", response.data);
+      return res.status(500).json({ error: "NHL API returned invalid structure." });
+    }
+
     const players = response.data.data;
 
-    // Try to match by full name (case-insensitive)
     const match = players.find((p) => {
       const fullName = `${p.firstName} ${p.lastName}`.toLowerCase();
       return fullName === playerName.toLowerCase();
@@ -150,9 +154,11 @@ app.get("/api/player-stats", async (req, res) => {
     res.json(summary);
   } catch (err) {
     console.error("NHL API Error:", err.message);
+    console.error(err.stack); // <- ✅ shows full internal trace
     res.status(500).json({ error: "Could not fetch player stats." });
   }
 });
+
 
 
 /* ========== STATIC FILES AND INDEX LAST ========== */
