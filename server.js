@@ -122,15 +122,26 @@ app.get("/api/player-stats", async (req, res) => {
   }
 
   try {
-    const statsUrl = `https://api-web.nhle.com/v1/player/${playerId}/landing`;
+    // 1. Get basic info from landing endpoint
+    const landingUrl = `https://api-web.nhle.com/v1/player/${playerId}/landing`;
+    const landingRes = await axios.get(landingUrl);
+    const player = landingRes.data;
+
+    // 2. Get season stats from summary endpoint
+    const statsUrl = `https://api.nhle.com/stats/rest/en/skater/summary?cayenneExp=playerId=${playerId}`;
     const statsRes = await axios.get(statsUrl);
-    const player = statsRes.data;
+    const seasonStats = statsRes.data?.data?.[0] || {};
 
     const summary = {
       name: `${player.firstName?.default || "Unknown"} ${player.lastName?.default || ""}`,
-      team: player.currentTeam?.name?.default || player.team?.name?.default || "N/A",
-      position: player.primaryPosition || player.position || "N/A",
-      stats: player.seasonTotals?.[0]?.stat || {}
+      team: seasonStats.teamFullName || player.currentTeam?.name?.default || "N/A",
+      position: player.primaryPosition || "N/A",
+      stats: {
+        goals: seasonStats.goals || 0,
+        assists: seasonStats.assists || 0,
+        points: seasonStats.points || 0,
+        gamesPlayed: seasonStats.gamesPlayed || 0
+      }
     };
 
     res.json(summary);
@@ -139,6 +150,7 @@ app.get("/api/player-stats", async (req, res) => {
     res.status(500).json({ error: "Could not fetch player stats." });
   }
 });
+
 
 /* ========== STATIC FILES AND INDEX LAST ========== */
 app.use(express.static(path.join(__dirname, "public")));
