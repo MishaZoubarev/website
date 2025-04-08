@@ -122,26 +122,33 @@ app.get("/api/player-stats", async (req, res) => {
   }
 
   try {
-    // 1. Get basic info from landing endpoint
-    const landingUrl = `https://api-web.nhle.com/v1/player/${playerId}/landing`;
-    const landingRes = await axios.get(landingUrl);
-    const player = landingRes.data;
+    // Fetch player details
+    const playerResponse = await axios.get(`https://statsapi.web.nhl.com/api/v1/people/${playerId}`);
+    const playerData = playerResponse.data.people[0];
 
-    // 2. Get season stats from summary endpoint
-    const statsUrl = `https://api.nhle.com/stats/rest/en/skater/summary?cayenneExp=playerId=${playerId}`;
-    const statsRes = await axios.get(statsUrl);
-    const seasonStats = statsRes.data?.data?.[0] || {};
+    // Fetch current team details
+    const teamId = playerData.currentTeam?.id;
+    let teamName = "N/A";
+    if (teamId) {
+      const teamResponse = await axios.get(`https://statsapi.web.nhl.com/api/v1/teams/${teamId}`);
+      teamName = teamResponse.data.teams[0].name;
+    }
+
+    // Fetch season-specific statistics
+    const season = "20242025"; // Replace with desired season
+    const statsResponse = await axios.get(`https://statsapi.web.nhl.com/api/v1/people/${playerId}/stats?stats=statsSingleSeason&season=${season}`);
+    const stats = statsResponse.data.stats[0].splits[0]?.stat || {};
 
     const summary = {
-      name: `${player.firstName?.default || "Unknown"} ${player.lastName?.default || ""}`,
-      team: seasonStats.teamFullName || player.currentTeam?.name?.default || "N/A",
-      position: player.primaryPosition || "N/A",
+      name: `${playerData.fullName}`,
+      position: playerData.primaryPosition?.name || "N/A",
+      team: teamName,
       stats: {
-        goals: seasonStats.goals || 0,
-        assists: seasonStats.assists || 0,
-        points: seasonStats.points || 0,
-        gamesPlayed: seasonStats.gamesPlayed || 0
-      }
+        goals: stats.goals || 0,
+        assists: stats.assists || 0,
+        points: stats.points || 0,
+        gamesPlayed: stats.games || 0,
+      },
     };
 
     res.json(summary);
@@ -150,6 +157,7 @@ app.get("/api/player-stats", async (req, res) => {
     res.status(500).json({ error: "Could not fetch player stats." });
   }
 });
+
 
 
 /* ========== STATIC FILES AND INDEX LAST ========== */
