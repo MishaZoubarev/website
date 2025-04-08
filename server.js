@@ -114,7 +114,7 @@ const sendFlightUpdates = async () => {
   }
 };
 
-// ✅ NHL Player Stats
+// ✅ NHL Player Stats (by ID, updated to use seasonTotals)
 app.get("/api/player-stats", async (req, res) => {
   const playerId = req.query.id;
   if (!playerId) {
@@ -127,10 +127,10 @@ app.get("/api/player-stats", async (req, res) => {
     const player = statsRes.data;
 
     const summary = {
-      name: `${player.firstName.default} ${player.lastName.default}`,
-      team: player.currentTeam?.name?.default || "N/A",
-      position: player.primaryPosition || "N/A",
-      stats: player.featuredStats?.regularSeason?.subSeason?.[0] || {}
+      name: `${player.firstName?.default || "Unknown"} ${player.lastName?.default || ""}`,
+      team: player.currentTeam?.name?.default || player.team?.name?.default || "N/A",
+      position: player.primaryPosition || player.position || "N/A",
+      stats: player.seasonTotals?.[0]?.stat || {}
     };
 
     res.json(summary);
@@ -139,15 +139,6 @@ app.get("/api/player-stats", async (req, res) => {
     res.status(500).json({ error: "Could not fetch player stats." });
   }
 });
-
-
-
-
-
-
-
-
-
 
 /* ========== STATIC FILES AND INDEX LAST ========== */
 app.use(express.static(path.join(__dirname, "public")));
