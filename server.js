@@ -138,7 +138,7 @@ app.get("/api/player-stats", async (req, res) => {
 
     // 🔍 Use available keys
     const summary = {
-      name: `${profile.firstName || ""} ${profile.lastName || ""}`.trim(),
+      name: `${profile.firstName?.default || ""} ${profile.lastName?.default || ""}`.trim(),
       team: profile.currentTeamAbbrev || profile.fullTeamName || "N/A",
       position: profile.position || "N/A",
       stats: {
