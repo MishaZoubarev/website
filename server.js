@@ -155,7 +155,7 @@ app.get("/api/player-stats", async (req, res) => {
 
     res.json(summary);
   } catch (err) {
-    console.error("NHL API Error:", err.message);
+    console.error("NHL API Error :", err.message);
     res.status(500).json({ error: "Could not fetch player stats." });
   }
 });
