@@ -124,3 +124,19 @@ nhlForm?.addEventListener("submit", async function (e) {
     nhlResult.innerHTML = `<span style="color:red;">Failed to fetch stats.</span>`;
   }
 });
+
+function setCursor(filename) {
+  document.body.style.cursor = `url('/${filename}'), auto`;
+  localStorage.setItem("customCursor", filename);
+}
+
+function resetCursor() {
+  document.body.style.cursor = "auto";
+  localStorage.removeItem("customCursor");
+}
+
+// Apply saved cursor on page load
+window.addEventListener("DOMContentLoaded", () => {
+  const saved = localStorage.getItem("customCursor");
+  if (saved) setCursor(saved);
+});
