@@ -125,7 +125,11 @@ app.get("/api/player-stats", async (req, res) => {
     // Step 1: Get stats
     const statsUrl = `https://api.nhle.com/stats/rest/en/skater/summary?cayenneExp=playerId=${playerId}`;
     const statsRes = await axios.get(statsUrl);
-    const statsData = statsRes.data?.data?.[0];
+    const allStats = statsRes.data?.data || [];
+// Sort by seasonId DESC to get the latest season first
+    allStats.sort((a, b) => b.seasonId - a.seasonId);
+    const statsData = allStats[0];
+
 
     if (!statsData) {
       return res.status(404).json({ error: "Player stats not found." });
