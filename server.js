@@ -116,49 +116,60 @@ const sendFlightUpdates = async () => {
 
 // ✅ NHL Player Stats (by ID, updated to use seasonTotals)
 app.get("/api/player-stats", async (req, res) => {
-  const playerId = req.query.id;
-  if (!playerId) {
-    return res.status(400).json({ error: "Player ID is required." });
+  const playerName = req.query.name;
+  if (!playerName) {
+    return res.status(400).json({ error: "Player name is required." });
   }
 
   try {
-    // Step 1: Get stats
+    // Step 1: Get player ID by name
+    const searchUrl = `https://search.d3.nhle.com/api/v1/search/player?culture=en-us&limit=5&q=${encodeURIComponent(playerName)}`;
+    const searchRes = await axios.get(searchUrl);
+    const results = searchRes.data.documents;
+
+    if (!results || results.length === 0) {
+      return res.status(404).json({ error: "Player not found." });
+    }
+
+    const playerId = results[0].id;
+
+    // Step 2: Fetch stats using ID
     const statsUrl = `https://api.nhle.com/stats/rest/en/skater/summary?cayenneExp=playerId=${playerId}`;
     const statsRes = await axios.get(statsUrl);
     const allStats = statsRes.data?.data || [];
-// Sort by seasonId DESC to get the latest season first
+
+    // Get most recent season
     allStats.sort((a, b) => b.seasonId - a.seasonId);
     const statsData = allStats[0];
-
 
     if (!statsData) {
       return res.status(404).json({ error: "Player stats not found." });
     }
 
-    // Step 2: Get profile
+    // Step 3: Get team + position info
     const profileUrl = `https://api-web.nhle.com/v1/player/${playerId}/landing`;
     const profileRes = await axios.get(profileUrl);
     const profile = profileRes.data;
 
-    // 🔍 Use available keys
     const summary = {
       name: `${profile.firstName?.default || ""} ${profile.lastName?.default || ""}`.trim(),
-      team: profile.currentTeamAbbrev || profile.fullTeamName || "N/A",
-      position: profile.position || "N/A",
+      team: profile.currentTeam?.abbrev || profile.currentTeam?.name?.default || "N/A",
+      position: profile.primaryPositionAbbreviation || profile.primaryPosition || "N/A",
       stats: {
         goals: statsData.goals || 0,
         assists: statsData.assists || 0,
         points: statsData.points || 0,
         gamesPlayed: statsData.gamesPlayed || 0,
-      },
+      }
     };
 
     res.json(summary);
   } catch (err) {
-    console.error("❌ NHL API Error:", err.message);
+    console.error("NHL API Error:", err.message);
     res.status(500).json({ error: "Could not fetch player stats." });
   }
 });
+
 
 
 

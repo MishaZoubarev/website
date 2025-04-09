@@ -103,7 +103,7 @@ nhlForm?.addEventListener("submit", async function (e) {
   nhlResult.innerHTML = "Searching...";
 
   try {
-    const res = await fetch(`/api/player-stats?id=${encodeURIComponent(player)}`);
+    const res = await fetch(`/api/player-stats?name=${encodeURIComponent(player)}`);
     const data = await res.json();
 
     if (data.error) {
